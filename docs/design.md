@@ -6,7 +6,7 @@ The original artwork is reused as a short panoramic banner on lessons, quizzes, 
 
 ## Duskwarden identity and water interaction
 
-The visible application name is duskwarden. Existing deployment and repository URLs stay stable. Ruslan Display provides decorative Cyrillic and Latin headings; lesson paragraphs remain sans-serif. The font is self-hosted from the official Google Fonts repository with its SIL OFL license included in public/fonts.
+The visible application name is duskwarden. The public address is now `app.duskwarden.workers.dev`; the repository URL remains stable. Ruslan Display provides decorative Cyrillic and Latin headings; lesson paragraphs remain sans-serif. The font is self-hosted from the official Google Fonts repository with its SIL OFL license included in public/fonts.
 
 Original SVG artwork adds a tree-and-star heraldic emblem, mountain contours, a compass and map trails. These motifs evoke an ancient fantasy chronicle across the hero, chapters and lesson pages. The SVG sources remain editable; no movie screenshots or third-party franchise artwork are used.
 

@@ -1,6 +1,14 @@
 # Cloudflare deployment
 
-Live deployment: [interview-lab.interview-lab.workers.dev](https://interview-lab.interview-lab.workers.dev). Initial release: October 2, 2026 (Europe/Chisinau). The deployment was verified with a disposable account: registration, secure session cookie, server grading, progress read from a separate login, and logout. The disposable account was removed after verification.
+Live deployment: [app.duskwarden.workers.dev](https://app.duskwarden.workers.dev). Initial release: October 2, 2026 (Europe/Chisinau). The original deployment was verified with a disposable account: registration, secure session cookie, server grading, progress read from a separate login, and logout. The disposable account was removed after verification.
+
+## Address and device access
+
+The Worker is named `app`, and the account's workers.dev subdomain is `duskwarden`. The database remains `interview-lab` with its original ID; renaming the public address does not migrate or recreate progress. The GitHub repository URL also remains unchanged.
+
+The same HTTPS address works on phones, tablets and computers. Browser cookies and localStorage belong to each origin, so restore an existing profile with its secret transfer code on the new address: **«Выбрать героя» → «У меня есть код переноса»**. Name alone does not recover a profile. Cloudflare account-subdomain changes affect every Worker address in that account; the former `interview-lab.interview-lab.workers.dev` address is retired.
+
+The address change was verified by creating a disposable profile and reading a lesson on the old hostname, then restoring the same profile, race and reading status on the new hostname. HTTPS certificate validation remained enabled. A resolver may temporarily cache an NXDOMAIN result queried before the new name existed; allow its negative-cache entry to expire. The Workers and D1 records are unaffected by DNS propagation.
 
 The intended environment is **Workers Free + D1 Free**. No paid plan, domain purchase, card entry, paid add-on or subscription change is part of setup. A `workers.dev` subdomain provides HTTPS without purchasing a domain. Check the account's active plan before deploying. If it is already Paid, its account-level billing rules apply; merely setting a small CPU limit does not enforce a zero-dollar bill.
 

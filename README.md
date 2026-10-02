@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/VasilievNichita/interview-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/VasilievNichita/interview-lab/actions/workflows/ci.yml)
 
-**[Open the live app](https://interview-lab.interview-lab.workers.dev)**
+**[Open duskwarden on any device](https://app.duskwarden.workers.dev)**
+
+Use the same URL on desktop, phone and tablet. To restore your existing progress, choose **«Выбрать героя» → «У меня есть код переноса»** and enter your saved secret code. A new hostname has separate browser storage, so restoration is needed once after moving from the old address.
 
 A Russian-language fullstack theory learning app: **read → understand an example → answer questions → review mistakes → track progress**.
 

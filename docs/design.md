@@ -4,9 +4,13 @@ The interface uses a dark fantasy forest atmosphere: a moonlit mountain lake, de
 
 The original artwork is reused as a short panoramic banner on lessons, quizzes, chapters, practice and progress pages. Subtle image treatments also appear in exam and practice panels. The home page retains its full-viewport hero and a direct route to the next lesson.
 
-## Mist interaction
+## Duskwarden identity and water interaction
 
-Buttons and navigable course cards have a decorative CSS `::before` layer made of blurred radial gradients. On hover (pointer devices) or keyboard focus, it rises and fades over a 2.8 second cycle. The layer is behind the text and ignores pointer events. Background and text colors switch together to dark ink on a pale green surface, preventing a white-on-white intermediate frame. Disabled buttons do not animate. Reduced-motion preferences disable the mist animation entirely. Touch devices keep normal, readable surfaces without sticky hover effects.
+The visible application name is duskwarden. Existing deployment and repository URLs stay stable. Ruslan Display provides decorative Cyrillic and Latin headings; lesson paragraphs remain sans-serif. The font is self-hosted from the official Google Fonts repository with its SIL OFL license included in public/fonts.
+
+Original SVG artwork adds a tree-and-star heraldic emblem, mountain contours, a compass and map trails. These motifs evoke an ancient fantasy chronicle across the hero, chapters and lesson pages. The SVG sources remain editable; no movie screenshots or third-party franchise artwork are used.
+
+Buttons and navigable cards have no decorative border. A curved CSS layer rises from below over 0.85 seconds, then gently sways like a water surface. The dark green fill preserves contrast with pale gold text throughout the transition. Keyboard focus triggers the same effect and retains a visible focus outline. Disabled controls do not animate; reduced-motion preferences disable the moving layer. Touch devices keep stable surfaces.
 
 ## Artwork
 
@@ -21,6 +25,6 @@ Final generation prompt:
 
 ## Validation
 
-TypeScript and production build passed. Browser review covered the desktop hero, lesson banner and reading surface, keyboard-triggered mist (including computed animation and final foreground/background colors), and mobile home and quiz pages at 390 px without horizontal overflow. Screenshots: `docs/screenshots/desktop.jpg`, `mobile.jpg`, and `lesson.jpg`.
+TypeScript and production build passed. Browser review covered the desktop hero, lesson banner and reading surface, keyboard-triggered water fill (including computed animation, rising position and zero border width), and mobile home and quiz pages at 390 px without horizontal overflow. Screenshots: `docs/screenshots/desktop.jpg`, `mobile.jpg`, and `lesson.jpg`.
 
 No API contract, database schema, lesson content or saved progress changed. Existing commit history is preserved; the new theme and documentation are separate commits authored by Vasiliev Nichita.

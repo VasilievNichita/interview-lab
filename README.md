@@ -1,4 +1,4 @@
-# Interview Lab
+# duskwarden
 
 [![CI](https://github.com/VasilievNichita/interview-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/VasilievNichita/interview-lab/actions/workflows/ci.yml)
 
@@ -8,7 +8,7 @@ A Russian-language fullstack theory learning app: **read → understand an examp
 
 Built for junior interview preparation with additional middle-level tradeoffs. The curriculum expands a colleague's original `it-roadmap.html` checklist into 39 lessons across nine chapters. The original file is not redistributed; lesson explanations, interface and application code were created for this project with AI assistance.
 
-![Interview Lab landscape home page](docs/screenshots/desktop.jpg)
+![duskwarden fantasy home page](docs/screenshots/desktop.jpg)
 
 [Mobile screenshot](docs/screenshots/mobile.jpg)
 
@@ -20,7 +20,7 @@ Built for junior interview preparation with additional middle-level tradeoffs. T
 - Interview flashcards for spoken answers and self-assessment.
 - Registration, login and one-time-code password recovery.
 - Account-backed reading progress, best scores, mastery totals and recent attempt history across devices.
-- Guest learning and quizzes, original moonlit forest artwork, dark fantasy reading interface, rising-mist hover effects, keyboard access and reduced-motion support.
+- Guest learning and quizzes, original moonlit forest artwork, dark fantasy reading interface, water-fill hover effects, Slavic-inspired Cyrillic headings and original heraldic ornaments, keyboard access and reduced-motion support.
 
 ## Stack
 
@@ -85,4 +85,4 @@ This course is a conceptual foundation based on the supplied roadmap, not a comp
 
 The moonlit forest artwork was created for this project with the built-in image generation tool. Its prompt and asset details are documented in [Design](docs/design.md). The image is served locally; visitors do not contact an external image service.
 
-MIT © 2026 [VasilievNichita](https://github.com/VasilievNichita). Lucide icons are ISC-licensed. Linked documentation belongs to its respective authors; lessons use original explanations, not copied articles.
+MIT © 2026 [VasilievNichita](https://github.com/VasilievNichita). Lucide icons are ISC-licensed. Ruslan Display is bundled under the SIL Open Font License (see `public/fonts/OFL-RuslanDisplay.txt`). Linked documentation belongs to its respective authors; lessons use original explanations, not copied articles.

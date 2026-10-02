@@ -210,10 +210,10 @@ function App() {
         </button>
         <a href="#home" className="brand">
           <span className="brand-icon">
-            <Code2 size={23} />
+            <img src="/images/warden-sigil.svg" alt="" width="32" height="32" />
           </span>
           <span>
-            interview<span className="brand-dot">.</span>lab<small>ЗНАНИЯ В ДЕЙСТВИИ</small>
+            duskwarden<small>ЗНАНИЯ В ДЕЙСТВИИ</small>
           </span>
         </a>
         <div className="track-label">
@@ -277,7 +277,7 @@ function App() {
       <div className="workspace" inert={mobile}>
         <header className="topbar">
           <a className="wordmark" href="#home">
-            interview<span>.</span>lab
+            duskwarden
           </a>
           <nav className="header-links" aria-label="Основные страницы">
             <a href="#home" aria-current={route === 'home' ? 'page' : undefined}>
@@ -323,7 +323,7 @@ function App() {
         </header>
         {route !== 'home' && (
           <div className="landscape-ribbon" aria-hidden="true">
-            <span className="ribbon-kicker">INTERVIEW LAB / FULLSTACK JOURNEY</span>
+            <span className="ribbon-kicker">DUSKWARDEN / ХРОНИКИ ЗНАНИЙ</span>
             <span className="ribbon-caption">
               {currentLesson
                 ? 'Одна новая идея. Ещё один шаг.'
@@ -361,7 +361,8 @@ function App() {
                       fetchPriority="high"
                     />
                     <div className="hero-copy">
-                      <div className="hero-eyebrow">ТВОЙ ПУТЬ В РАЗРАБОТКУ</div>
+                      <img className="realm-sigil" src="/images/warden-sigil.svg" alt="" />
+                      <div className="hero-eyebrow">ХРОНИКИ ТВОЕГО ПУТИ</div>
                       <h1 id="hero-title">
                         Большие цели.
                         <br />
@@ -394,7 +395,7 @@ function App() {
                     >
                       <ChevronDown size={32} />
                     </button>
-                    <span className="photo-credit">Пейзаж создан для interview.lab</span>
+                    <span className="photo-credit">Пейзаж создан для duskwarden</span>
                   </section>
                   <div className="home-content" id="learning-path">
                     <div className="journey-intro">
@@ -708,7 +709,7 @@ function App() {
           )}
           <footer className="app-footer">
             <span>
-              <Code2 size={15} /> interview.lab
+              <Code2 size={15} /> duskwarden
             </span>
             <span>Понимание важнее заучивания.</span>
             <a

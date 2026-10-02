@@ -12,14 +12,17 @@ Built for junior interview preparation with additional middle-level tradeoffs. T
 
 [Mobile screenshot](docs/screenshots/mobile.jpg)
 
+[Name and race selection](docs/screenshots/hero-profile.jpg) · [AI companion dialogue](docs/screenshots/companion.jpg) · [Mobile companion](docs/screenshots/companion-mobile.jpg)
+
 ## Features
 
 - 39 lessons covering web fundamentals, business systems, web/desktop architecture, mobile, databases, infrastructure, observability, security and system design.
-- Explanations, examples, flow diagrams, primary documentation links and deeper technical tradeoffs in each lesson.
+- Five explanation sections per lesson, including engineering tradeoffs and a worked exercise, plus examples, flow diagrams and primary documentation links.
 - 117 questions, including 39 applied scenarios; lesson quizzes, nine chapter exams and one 39-question final exam, with answer explanations and unlimited repeats.
 - Interview flashcards for spoken answers and self-assessment.
-- Registration, login and one-time-code password recovery.
-- Account-backed reading progress, best scores, mastery totals and recent attempt history across devices.
+- Name + race profiles: humans, elves, orcs and dwarves; no email/password form.
+- Automatically saved reading progress, best scores, mastery totals and recent attempt history. A secret transfer code restores the same profile on another device.
+- Four illustrated miniature companions with an in-page NPC dialogue. Cloudflare Workers AI answers learning questions in Russian; a clearly labeled course excerpt is available when inference is unavailable.
 - Guest learning and quizzes, original moonlit forest artwork, dark fantasy reading interface, water-fill hover effects, Slavic-inspired Cyrillic headings and original heraldic ornaments, keyboard access and reduced-motion support.
 
 ## Stack
@@ -39,7 +42,7 @@ pnpm db:local
 pnpm preview
 ```
 
-Open `http://localhost:8787`. Local D1 data is stored in ignored `.wrangler/` files and is separate from production. No Cloudflare account is required for local development.
+Open `http://localhost:8787`. Local D1 data is stored in ignored `.wrangler/` files and is separate from production. AI inference uses Cloudflare even during local development and requires an authorized account. Remove the optional `ai` binding for fully offline backend development; the mentor then returns labeled course material.
 
 For hot reload, keep Wrangler running and run `pnpm dev` in another terminal. Vite proxies `/api` to Wrangler on port 8787. For production-equivalent browser QA use the Wrangler URL after `pnpm build`.
 
@@ -59,17 +62,19 @@ $env:TEST_BASE_URL = 'http://127.0.0.1:8787'
 pnpm test
 ```
 
-Integration checks create disposable accounts **only in a localhost database** and refuse production URLs. They exercise session persistence, ownership isolation, server-side scoring, password recovery, and revocation. Without `TEST_BASE_URL`, integration checks are explicitly skipped.
+Integration checks create disposable profiles **only in a localhost database** and refuse production URLs. They exercise session persistence, ownership isolation, server-side scoring, transfer/rotation, and legacy recovery. Mentor unit tests use fake AI responses and do not consume inference quota. Without `TEST_BASE_URL`, integration checks are explicitly skipped.
 
 ## Project structure
 
 ```text
 src/main.tsx          Application views and interactions
+src/realm.tsx         Name/race setup, transfer and companion dialogue
 src/style.css        Responsive design system
 src/data/            Typed lessons, questions and chapter catalog
 server/index.ts      Worker routes, ownership and persistence
 server/security.ts   Credential/session primitives
 server/grading.ts    Server-authoritative quiz grading
+server/mentor.ts     Grounded AI answers and labeled course fallback
 migrations/          Versioned D1 schema
 tests/               Unit and local HTTP integration checks
 docs/                Architecture and deployment decisions
@@ -79,10 +84,12 @@ See [Architecture](docs/architecture.md), [Deployment](docs/deployment.md), [Sec
 
 ## Scope and limitations
 
-This course is a conceptual foundation based on the supplied roadmap, not a complete coding bootcamp or a claim of middle-level professional readiness. Exam scores are learning feedback, not certification. Email ownership is not verified; recovery uses the code shown during registration instead of email delivery. Save that code securely. Free Cloudflare services have quotas; availability beyond them is not guaranteed. See the security document for authentication tradeoffs and the deployment guide for plan details.
+This course is a conceptual foundation based on the supplied roadmap, not a complete coding bootcamp or a claim of middle-level professional readiness. Exam scores are learning feedback, not certification. The transfer code grants access to progress: save it privately. Name alone cannot recover a profile. Losing both browser access and the code loses self-service recovery. AI answers can be wrong; course links support further reading and are not live web search results. Free Cloudflare services have quotas; availability beyond them is not guaranteed. See the security and deployment documents for details.
 
 ## License and attribution
 
 The moonlit forest artwork was created for this project with the built-in image generation tool. Its prompt and asset details are documented in [Design](docs/design.md). The image is served locally; visitors do not contact an external image service.
+
+Companion miniature prompts and reference provenance are documented in [Companions](docs/companions.md). The fantasy presentation is an unofficial fan-inspired design, not affiliated with Tolkien rights holders. Generated artwork and third-party character references are not covered by the code's MIT license.
 
 MIT © 2026 [VasilievNichita](https://github.com/VasilievNichita). Lucide icons are ISC-licensed. Ruslan Display is bundled under the SIL Open Font License (see `public/fonts/OFL-RuslanDisplay.txt`). Linked documentation belongs to its respective authors; lessons use original explanations, not copied articles.

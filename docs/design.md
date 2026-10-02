@@ -27,4 +27,10 @@ Final generation prompt:
 
 TypeScript and production build passed. Browser review covered the desktop hero, lesson banner and reading surface, keyboard-triggered water fill (including computed animation, rising position and zero border width), and mobile home and quiz pages at 390 px without horizontal overflow. Screenshots: `docs/screenshots/desktop.jpg`, `mobile.jpg`, and `lesson.jpg`.
 
-No API contract, database schema, lesson content or saved progress changed. Existing commit history is preserved; the new theme and documentation are separate commits authored by Vasiliev Nichita.
+The initial theme release preserved API contracts, schema and curriculum. The subsequent companion release adds name/race profiles, an additive D1 migration and expanded explanations in all lessons; existing progress remains intact. Existing commit history is preserved.
+
+## Companion release
+
+Four reference-inspired generated miniatures accompany the name/race picker and tutor panel. See [asset prompts and provenance](companions.md). The dialogue uses a forest-green shell and a light inner answer surface, with text-safe formatting for bold terms and code examples. Screenshots: `screenshots/hero-profile.jpg`, `screenshots/profile-mobile.jpg`, `screenshots/companion.jpg`, and `screenshots/companion-mobile.jpg`.
+
+Browser verification covered all four race choices, profile persistence after reload, saved lesson status, real Russian AI answers, desktop dialogue layout and 390 px mobile layout without horizontal overflow. The tutor gracefully returns labeled course excerpts when inference is unavailable.

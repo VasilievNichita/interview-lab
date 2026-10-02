@@ -24,11 +24,17 @@ Run checks, apply backward-compatible migrations, build and deploy. Check the li
 
 ## Free quotas
 
+The optional `AI` binding uses `@cf/qwen/qwen2.5-coder-32b-instruct`. Workers AI currently provides 10,000 neurons/day on Free; beyond the allowance, inference fails rather than automatically upgrading the plan. See [Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/). The app additionally caps model attempts at 60 per day across the deployment and 20 mentor requests/hour per profile, with a 1,000-token output limit and a 25-second response deadline. These caps do not guarantee a particular provider usage total; keep the account on Free. No paid fallback or external API key is configured. Course excerpts are returned with a clear notice on failure. AI bindings access remote inference even during local development.
+
+Apply migration `0003_companion_profiles.sql` before deploying the profile/companion release. It adds a race column and transfer-digest index without replacing users or progress. Verify the production mentor separately from unit tests: tests intentionally mock inference and cannot prove provider access.
+
 At the time of initial setup, the published Free allowance includes 100,000 Worker requests/day, a 10 ms CPU limit per invocation, and D1 allowances of 5 million rows read/day, 100,000 rows written/day and 5 GB total storage (with a separate per-database size limit). Static asset requests are free. These values are not an SLA and can change: check [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/), [Workers limits](https://developers.cloudflare.com/workers/platform/limits/) and [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/).
 
 Do not switch to Paid to resolve a quota error without the owner's approval. On Free, exceeding applicable limits can cause failed requests. The UI must report unsaved work clearly. Durable history grows with use; for a larger audience add retention, monitoring and reviewed abuse controls.
 
 ## Recovery and operations
+
+The companion release was verified with a disposable production profile: name/race creation, saved reading status, restoration into a separate session and a real Russian AI answer to a UML question. The QA profile and its dependent data were then removed. No billing settings were changed.
 
 - Check D1 Time Travel availability and retention in [the official documentation](https://developers.cloudflare.com/d1/reference/time-travel/) before relying on it.
 - For a manual backup, use `wrangler d1 export interview-lab --remote --output=<private-backup.sql>` and keep the result outside public Git history. It contains user data and credential hashes.

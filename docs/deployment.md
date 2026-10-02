@@ -1,5 +1,7 @@
 # Cloudflare deployment
 
+Live deployment: [interview-lab.interview-lab.workers.dev](https://interview-lab.interview-lab.workers.dev). Initial release: October 2, 2026 (Europe/Chisinau). The deployment was verified with a disposable account: registration, secure session cookie, server grading, progress read from a separate login, and logout. The disposable account was removed after verification.
+
 The intended environment is **Workers Free + D1 Free**. No paid plan, domain purchase, card entry, paid add-on or subscription change is part of setup. A `workers.dev` subdomain provides HTTPS without purchasing a domain. Check the account's active plan before deploying. If it is already Paid, its account-level billing rules apply; merely setting a small CPU limit does not enforce a zero-dollar bill.
 
 ## First deployment

@@ -1,5 +1,9 @@
 # Interview Lab
 
+[![CI](https://github.com/VasilievNichita/interview-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/VasilievNichita/interview-lab/actions/workflows/ci.yml)
+
+**[Open the live app](https://interview-lab.interview-lab.workers.dev)**
+
 A Russian-language fullstack theory learning app: **read → understand an example → answer questions → review mistakes → track progress**.
 
 Built for junior interview preparation with additional middle-level tradeoffs. The curriculum expands a colleague's original `it-roadmap.html` checklist into 39 lessons across nine chapters. The original file is not redistributed; lesson explanations, interface and application code were created for this project with AI assistance.

@@ -81,12 +81,26 @@ function App() {
     [mobile, setMobile] = useState(false),
     [busy, setBusy] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
+  const [narrow, setNarrow] = useState(() => matchMedia('(max-width: 760px)').matches);
+  useEffect(() => {
+    const query = matchMedia('(max-width: 760px)');
+    const resize = () => setNarrow(query.matches);
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobile(false);
+    };
+    query.addEventListener('change', resize);
+    window.addEventListener('keydown', escape);
+    return () => {
+      query.removeEventListener('change', resize);
+      window.removeEventListener('keydown', escape);
+    };
+  }, []);
   useEffect(() => {
     const listener = () => {
       setRoute(location.hash.slice(1) || 'home');
       setMobile(false);
       window.scrollTo(0, 0);
-      mainRef.current?.focus();
+      mainRef.current?.focus({ preventScroll: true });
     };
     window.addEventListener('hashchange', listener);
     return () => window.removeEventListener('hashchange', listener);
@@ -177,7 +191,13 @@ function App() {
       {mobile && (
         <button className="overlay" aria-label="Закрыть меню" onClick={() => setMobile(false)} />
       )}
-      <aside className={'sidebar ' + (mobile ? 'is-open' : '')}>
+      <aside
+        className={'sidebar ' + (mobile ? 'is-open' : '')}
+        inert={narrow && !mobile}
+        onClick={(event) => {
+          if ((event.target as Element).closest('a')) setMobile(false);
+        }}
+      >
         <a href="#home" className="brand">
           <span className="brand-icon">
             <Code2 size={23} />

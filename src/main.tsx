@@ -321,6 +321,20 @@ function App() {
             )}
           </div>
         </header>
+        {route !== 'home' && (
+          <div className="landscape-ribbon" aria-hidden="true">
+            <span className="ribbon-kicker">INTERVIEW LAB / FULLSTACK JOURNEY</span>
+            <span className="ribbon-caption">
+              {currentLesson
+                ? 'Одна новая идея. Ещё один шаг.'
+                : quizScope
+                  ? 'Остановись. Подумай. Проверь себя.'
+                  : route === 'progress'
+                    ? 'Посмотри, какой путь уже пройден.'
+                    : 'Большой путь начинается с любопытства.'}
+            </span>
+          </div>
+        )}
         <main id="main-content" tabIndex={-1} ref={mainRef}>
           {error && (
             <div className="error-banner" role="alert">
@@ -342,7 +356,7 @@ function App() {
                   <section className="landscape-hero" aria-labelledby="hero-title">
                     <img
                       className="hero-photo"
-                      src="/images/alpine-lake.jpg"
+                      src="/images/mist-lake.jpg"
                       alt=""
                       fetchPriority="high"
                     />
@@ -380,14 +394,7 @@ function App() {
                     >
                       <ChevronDown size={32} />
                     </button>
-                    <a
-                      className="photo-credit"
-                      href="https://unsplash.com/photos/OCGXUCCQblw"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Фото: Alec Olson / Unsplash
-                    </a>
+                    <span className="photo-credit">Пейзаж создан для interview.lab</span>
                   </section>
                   <div className="home-content" id="learning-path">
                     <div className="journey-intro">

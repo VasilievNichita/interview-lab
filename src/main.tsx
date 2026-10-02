@@ -5,6 +5,7 @@ import {
   BookOpen,
   Check,
   CheckCircle2,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Clock3,
@@ -15,7 +16,6 @@ import {
   Layers3,
   LogOut,
   Menu,
-  Play,
   RotateCcw,
   ShieldCheck,
   Sparkles,
@@ -81,17 +81,18 @@ function App() {
     [mobile, setMobile] = useState(false),
     [busy, setBusy] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
-  const [narrow, setNarrow] = useState(() => matchMedia('(max-width: 760px)').matches);
+  const menuRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    const query = matchMedia('(max-width: 760px)');
-    const resize = () => setNarrow(query.matches);
+    if (mobile) menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
+    else if (menuRef.current?.contains(document.activeElement)) menuButtonRef.current?.focus();
+  }, [mobile]);
+  useEffect(() => {
     const escape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setMobile(false);
     };
-    query.addEventListener('change', resize);
     window.addEventListener('keydown', escape);
     return () => {
-      query.removeEventListener('change', resize);
       window.removeEventListener('keydown', escape);
     };
   }, []);
@@ -177,7 +178,7 @@ function App() {
     : chapters.find((c) => c.lessons.some((l) => l.id === currentLesson?.id));
   const quizScope = route.startsWith('quiz/') ? route.slice(5) : null;
   return (
-    <div className="app-shell">
+    <div className={'app-shell ' + (route === 'home' ? 'home-page' : 'inner-page')}>
       <a
         className="skip"
         href="#main-content"
@@ -192,12 +193,21 @@ function App() {
         <button className="overlay" aria-label="Закрыть меню" onClick={() => setMobile(false)} />
       )}
       <aside
+        id="course-menu"
+        ref={menuRef}
         className={'sidebar ' + (mobile ? 'is-open' : '')}
-        inert={narrow && !mobile}
+        inert={!mobile}
         onClick={(event) => {
           if ((event.target as Element).closest('a')) setMobile(false);
         }}
       >
+        <button
+          className="drawer-close icon-button"
+          aria-label="Закрыть навигацию"
+          onClick={() => setMobile(false)}
+        >
+          <X size={18} />
+        </button>
         <a href="#home" className="brand">
           <span className="brand-icon">
             <Code2 size={23} />
@@ -264,30 +274,33 @@ function App() {
           </button>
         </div>
       </aside>
-      <div className="workspace">
+      <div className="workspace" inert={mobile}>
         <header className="topbar">
-          <button
-            className="icon-button mobile-only"
-            aria-label="Открыть меню"
-            onClick={() => setMobile(true)}
-          >
-            <Menu />
-          </button>
-          <span className="breadcrumb">
-            Личная мастерская <span>/</span>{' '}
-            <b>
-              {currentLesson
-                ? 'Урок'
-                : quizScope
-                  ? 'Проверка знаний'
-                  : route === 'progress'
-                    ? 'Прогресс'
-                    : route === 'practice'
-                      ? 'Практика'
-                      : 'Мой маршрут'}
-            </b>
-          </span>
+          <a className="wordmark" href="#home">
+            interview<span>.</span>lab
+          </a>
+          <nav className="header-links" aria-label="Основные страницы">
+            <a href="#home" aria-current={route === 'home' ? 'page' : undefined}>
+              Обучение
+            </a>
+            <a href="#practice" aria-current={route === 'practice' ? 'page' : undefined}>
+              Практика
+            </a>
+            <a href="#progress" aria-current={route === 'progress' ? 'page' : undefined}>
+              Мой прогресс
+            </a>
+          </nav>
           <div className="top-actions">
+            <button
+              className="icon-button menu-toggle"
+              ref={menuButtonRef}
+              aria-label="Открыть меню"
+              aria-expanded={mobile}
+              aria-controls="course-menu"
+              onClick={() => setMobile(true)}
+            >
+              <Menu size={20} />
+            </button>
             <span className="level">
               <span /> Junior → Middle
             </span>
@@ -326,137 +339,124 @@ function App() {
             <>
               {route === 'home' && (
                 <>
-                  <div className="page-heading">
-                    <div>
-                      <div className="eyebrow">ТВОЙ СЛЕДУЮЩИЙ УРОВЕНЬ</div>
-                      <h1>
-                        {user ? `С возвращением, ${user.name}.` : 'От «слышал» — к «понимаю».'}
+                  <section className="landscape-hero" aria-labelledby="hero-title">
+                    <img
+                      className="hero-photo"
+                      src="/images/alpine-lake.jpg"
+                      alt=""
+                      fetchPriority="high"
+                    />
+                    <div className="hero-copy">
+                      <div className="hero-eyebrow">ТВОЙ ПУТЬ В РАЗРАБОТКУ</div>
+                      <h1 id="hero-title">
+                        Большие цели.
+                        <br />
+                        Понятные шаги.
                       </h1>
                       <p>
-                        Разбирайся в технологиях. Проверяй себя. Иди на собеседование увереннее.
+                        От первого «как это работает» до уверенного ответа
+                        <br className="desktop-break" /> на собеседовании. Изучай fullstack в своём
+                        ритме.
                       </p>
-                    </div>
-                    <span className="edition">
-                      FULLSTACK
-                      <br />
-                      <b>LEARNING PATH / 01</b>
-                    </span>
-                  </div>
-                  <div className="dashboard-top">
-                    <section className="continue-card">
-                      <div className="pill">
-                        <span className="tiny-dot" />
-                        {done ? 'ПРОДОЛЖИТЬ МАРШРУТ' : 'НАЧНИ С ОСНОВ'}
-                      </div>
-                      <div className="continue-content">
-                        <div>
-                          <span className="lesson-kicker">
-                            {number(lessons.indexOf(next) + 1)} / {lessons.length} · ПЕРСОНАЛЬНЫЙ
-                            МАРШРУТ
-                          </span>
-                          <h2>{next.title}</h2>
-                          <p>{next.summary}</p>
-                          <div className="hero-actions">
-                            <button
-                              className="button primary"
-                              onClick={() => navigate('lesson/' + next.id)}
-                            >
-                              <Play size={16} fill="currentColor" />
-                              {readCount ? 'Продолжить обучение' : 'Открыть первый урок'}
-                            </button>
-                            <span>
-                              <Clock3 size={15} />
-                              {next.minutes} мин
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flow-art" aria-label="Схема: клиент, запрос и сервер">
-                          <div className="flow-node">
-                            <Code2 />
-                            <span>CLIENT</span>
-                          </div>
-                          <div className="flow-line">
-                            <span>request</span>
-                            <i />
-                          </div>
-                          <div className="flow-node server">
-                            <Layers3 />
-                            <span>SERVER</span>
-                          </div>
-                          <div className="flow-response">
-                            200 OK <Check size={13} />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="continue-footer">
-                        <BookOpen size={15} />
-                        <span>Теория</span>
-                        <i /> <span>Пример</span>
-                        <i />
-                        <span>Практика</span>
-                        <span className="footer-note">Один шаг каждый день.</span>
-                      </div>
-                    </section>
-                    <section className="focus-card">
-                      <div className="focus-title">
-                        <Sparkles size={19} />
-                        <span>НЕ ПРОСТО ЗАПОМНИТЬ</span>
-                      </div>
-                      <h3>
-                        Объясни так,
-                        <br />
-                        будто ты уже
-                        <br />
-                        <em>на собеседовании.</em>
-                      </h3>
-                      <p>
-                        В каждом уроке — вопрос для устного ответа и разбор нюансов уровня middle.
-                      </p>
-                      <a href="#practice">
-                        Перейти к практике <ArrowUpRight size={17} />
-                      </a>
-                    </section>
-                  </div>
-                  <div className="stats">
-                    <Stat
-                      icon={<BookOpen />}
-                      value={`${readCount}/${lessons.length}`}
-                      label="уроков прочитано"
-                    />
-                    <Stat
-                      icon={<CheckCircle2 />}
-                      value={`${done}/${lessons.length}`}
-                      label="тем закреплено"
-                    />
-                    <Stat icon={<Trophy />} value={`${passedExams}/10`} label="экзаменов сдано" />
-                    <Stat icon={<Layers3 />} value="9" label="разделов fullstack" />
-                  </div>
-                  <div className="section-heading">
-                    <div>
-                      <h2>Твой маршрут</h2>
-                      <p>От базовых понятий к проектированию систем.</p>
-                    </div>
-                    <span className="muted">39 тем · в своём темпе</span>
-                  </div>
-                  <div className="chapter-grid">
-                    {chapters.map((c, i) => (
-                      <ChapterCard key={c.id} chapter={c} index={i} progress={progress} />
-                    ))}
-                  </div>
-                  {!user && (
-                    <div className="guest-note">
-                      <ShieldCheck size={22} />
-                      <div>
-                        <b>Твой прогресс — на любом устройстве</b>
-                        <p>
-                          Создай аккаунт, чтобы сохранять прочитанное, результаты и историю попыток.
-                        </p>
-                      </div>
-                      <button className="button secondary" onClick={() => setAuth(true)}>
-                        Создать аккаунт
+                      <button
+                        className="button hero-button"
+                        onClick={() => navigate('lesson/' + next.id)}
+                      >
+                        {readCount ? 'Продолжить обучение' : 'Начать свой путь'}{' '}
+                        <ArrowUpRight size={18} />
                       </button>
                     </div>
-                  )}
+                    <span className="hero-caption">FULLSTACK · JUNIOR → MIDDLE</span>
+                    <button
+                      className="scroll-cue"
+                      aria-label="Посмотреть программу"
+                      onClick={() =>
+                        document.getElementById('learning-path')?.scrollIntoView({
+                          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+                            ? 'instant'
+                            : 'smooth',
+                        })
+                      }
+                    >
+                      <ChevronDown size={32} />
+                    </button>
+                    <a
+                      className="photo-credit"
+                      href="https://unsplash.com/photos/OCGXUCCQblw"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Фото: Alec Olson / Unsplash
+                    </a>
+                  </section>
+                  <div className="home-content" id="learning-path">
+                    <div className="journey-intro">
+                      <div>
+                        <div className="eyebrow">ОДИН УРОК БЛИЖЕ К ЦЕЛИ</div>
+                        <h2>{user ? user.name + ', продолжим?' : 'Знания, которые остаются.'}</h2>
+                      </div>
+                      <p>
+                        Пойми идею. Разбери пример. Проверь себя.
+                        <br />
+                        Небольшие шаги складываются в уверенное понимание.
+                      </p>
+                    </div>
+                    <a className="journey-next" href={'#lesson/' + next.id}>
+                      <span className="next-number">{number(lessons.indexOf(next) + 1)}</span>
+                      <div>
+                        <span className="eyebrow">
+                          {readCount ? 'ПРОДОЛЖИТЬ ОБУЧЕНИЕ' : 'ТВОЯ ОТПРАВНАЯ ТОЧКА'}
+                        </span>
+                        <h3>{next.title}</h3>
+                        <p>{next.summary}</p>
+                      </div>
+                      <span className="next-time">
+                        <Clock3 size={16} /> {next.minutes} мин
+                      </span>
+                      <ArrowUpRight size={26} />
+                    </a>
+                    <div className="stats">
+                      <Stat
+                        icon={<BookOpen />}
+                        value={`${readCount}/${lessons.length}`}
+                        label="уроков прочитано"
+                      />
+                      <Stat
+                        icon={<CheckCircle2 />}
+                        value={`${done}/${lessons.length}`}
+                        label="тем закреплено"
+                      />
+                      <Stat icon={<Trophy />} value={`${passedExams}/10`} label="экзаменов сдано" />
+                      <Stat icon={<Layers3 />} value="9" label="разделов fullstack" />
+                    </div>
+                    <div className="section-heading">
+                      <div>
+                        <h2>Твой маршрут</h2>
+                        <p>От базовых понятий к проектированию систем.</p>
+                      </div>
+                      <span className="muted">39 тем · в своём темпе</span>
+                    </div>
+                    <div className="chapter-grid">
+                      {chapters.map((c, i) => (
+                        <ChapterCard key={c.id} chapter={c} index={i} progress={progress} />
+                      ))}
+                    </div>
+                    {!user && (
+                      <div className="guest-note">
+                        <ShieldCheck size={22} />
+                        <div>
+                          <b>Твой прогресс — на любом устройстве</b>
+                          <p>
+                            Создай аккаунт, чтобы сохранять прочитанное, результаты и историю
+                            попыток.
+                          </p>
+                        </div>
+                        <button className="button secondary" onClick={() => setAuth(true)}>
+                          Создать аккаунт
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
               {route.startsWith('chapter/') && currentChapter && (

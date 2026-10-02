@@ -8,7 +8,7 @@ A Russian-language fullstack theory learning app: **read → understand an examp
 
 Built for junior interview preparation with additional middle-level tradeoffs. The curriculum expands a colleague's original `it-roadmap.html` checklist into 39 lessons across nine chapters. The original file is not redistributed; lesson explanations, interface and application code were created for this project with AI assistance.
 
-![Interview Lab desktop learning dashboard](docs/screenshots/desktop.jpg)
+![Interview Lab landscape home page](docs/screenshots/desktop.jpg)
 
 [Mobile screenshot](docs/screenshots/mobile.jpg)
 
@@ -20,7 +20,7 @@ Built for junior interview preparation with additional middle-level tradeoffs. T
 - Interview flashcards for spoken answers and self-assessment.
 - Registration, login and one-time-code password recovery.
 - Account-backed reading progress, best scores, mastery totals and recent attempt history across devices.
-- Guest learning and quizzes, responsive dark interface, keyboard access and reduced-motion support.
+- Guest learning and quizzes, photographic welcome screen, calm light reading interface, keyboard access and reduced-motion support.
 
 ## Stack
 
@@ -82,5 +82,7 @@ See [Architecture](docs/architecture.md), [Deployment](docs/deployment.md), [Sec
 This course is a conceptual foundation based on the supplied roadmap, not a complete coding bootcamp or a claim of middle-level professional readiness. Exam scores are learning feedback, not certification. Email ownership is not verified; recovery uses the code shown during registration instead of email delivery. Save that code securely. Free Cloudflare services have quotas; availability beyond them is not guaranteed. See the security document for authentication tradeoffs and the deployment guide for plan details.
 
 ## License and attribution
+
+The landscape photograph is by [Alec Olson](https://unsplash.com/photos/OCGXUCCQblw), used under the [Unsplash License](https://unsplash.com/license). A local optimized copy is served from Cloudflare, so visitors do not contact a third-party image service. The photograph is not covered by this repository's MIT license.
 
 MIT © 2026 [VasilievNichita](https://github.com/VasilievNichita). Lucide icons are ISC-licensed. Linked documentation belongs to its respective authors; lessons use original explanations, not copied articles.

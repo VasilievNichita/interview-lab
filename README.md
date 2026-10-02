@@ -20,7 +20,7 @@ Built for junior interview preparation with additional middle-level tradeoffs. T
 - Interview flashcards for spoken answers and self-assessment.
 - Registration, login and one-time-code password recovery.
 - Account-backed reading progress, best scores, mastery totals and recent attempt history across devices.
-- Guest learning and quizzes, photographic welcome screen, calm light reading interface, keyboard access and reduced-motion support.
+- Guest learning and quizzes, original moonlit forest artwork, dark fantasy reading interface, rising-mist hover effects, keyboard access and reduced-motion support.
 
 ## Stack
 
@@ -83,6 +83,6 @@ This course is a conceptual foundation based on the supplied roadmap, not a comp
 
 ## License and attribution
 
-The landscape photograph is by [Alec Olson](https://unsplash.com/photos/OCGXUCCQblw), used under the [Unsplash License](https://unsplash.com/license). A local optimized copy is served from Cloudflare, so visitors do not contact a third-party image service. The photograph is not covered by this repository's MIT license.
+The moonlit forest artwork was created for this project with the built-in image generation tool. Its prompt and asset details are documented in [Design](docs/design.md). The image is served locally; visitors do not contact an external image service.
 
 MIT © 2026 [VasilievNichita](https://github.com/VasilievNichita). Lucide icons are ISC-licensed. Linked documentation belongs to its respective authors; lessons use original explanations, not copied articles.

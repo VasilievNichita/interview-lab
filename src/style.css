@@ -3538,3 +3538,273 @@ h2,
     color: #fff0c4;
   }
 }
+/* Named heroes and their miniature companions. */
+.hero-dialog {
+  max-width: 660px;
+}
+.hero-dialog .modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.race-picker {
+  border: 0;
+  margin: 22px 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.race-picker legend {
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #d6c79e;
+}
+.auth-inner .race-choice {
+  margin: 0;
+  padding: 10px 4px;
+  text-align: center;
+  cursor: pointer;
+  background: #0e1c15;
+  border-radius: 6px;
+  position: relative;
+}
+.auth-inner .race-choice.chosen {
+  background: #38523c;
+  outline: 2px solid #b6c49b;
+}
+.auth-inner .race-choice input {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 8px;
+  top: 4px;
+  accent-color: #c8b985;
+}
+.race-choice img {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+}
+.race-choice span {
+  font-size: 13px;
+}
+.transfer-settings {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.transfer-settings summary {
+  cursor: pointer;
+  color: #d5c89c;
+  padding: 12px 0;
+}
+.transfer-settings p {
+  font-size: 13px;
+}
+.hero-dialog .recovery-code {
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.hero-dialog .button.full {
+  margin-top: 16px;
+}
+.companion {
+  position: fixed;
+  right: 20px;
+  bottom: 18px;
+  z-index: 22;
+}
+.npc-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  width: 132px;
+  color: #e6d9b4;
+}
+.npc-trigger img {
+  width: 115px;
+  height: 154px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 10px #0009);
+  transition: transform 0.25s ease;
+}
+.npc-trigger:hover img {
+  transform: translateY(-5px);
+}
+.npc-trigger span {
+  padding: 5px 10px;
+  background: #14261ee8;
+  border-radius: 15px;
+  font-size: 11px;
+  box-shadow: 0 2px 15px #0005;
+}
+.npc-dialog {
+  position: absolute;
+  bottom: 175px;
+  right: 0;
+  width: min(430px, calc(100vw - 32px));
+  max-height: min(640px, calc(100dvh - 205px));
+  overflow-y: auto;
+  background: linear-gradient(140deg, #294232, #101e17);
+  border: 1px solid #8d9670;
+  border-radius: 16px 16px 4px 16px;
+  padding: 23px;
+  box-shadow: 0 18px 70px #0009;
+  color: #e4e7d4;
+}
+.npc-dialog header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.npc-dialog header > div {
+  flex: 1;
+}
+.npc-dialog h2 {
+  font-family: Georgia, serif;
+  font-size: 23px;
+  line-height: 1.3;
+  margin: 0;
+}
+.npc-dialog .eyebrow {
+  margin-bottom: 8px;
+  font-size: 9px;
+}
+.npc-intro {
+  font-size: 13px;
+  margin: 16px 0;
+}
+.npc-dialog label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.npc-dialog textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 72px;
+  max-height: 180px;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  background: #0c1a12;
+  color: #f0ead8;
+  border: 1px solid #61755b;
+  padding: 12px;
+  border-radius: 5px;
+}
+.npc-dialog textarea:focus-visible {
+  outline: 2px solid #c8b985;
+}
+.npc-dialog form > button {
+  width: 100%;
+  margin-top: 10px;
+}
+.npc-answer {
+  border: 1px solid #fff;
+  background: #f5f3e9;
+  color: #1a3023;
+  border-radius: 5px;
+  padding: 17px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.75;
+  font-size: 14px;
+}
+.npc-reply-title {
+  font-family: Georgia, serif;
+  font-size: 19px;
+  margin: 22px 0 12px;
+  color: #e6d4a5;
+}
+.npc-answer pre {
+  white-space: pre;
+  overflow-x: auto;
+  background: #e5e8dc;
+  color: #1a3023;
+  padding: 12px;
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .top-actions {
+    min-width: 0;
+  }
+  .top-actions > .button {
+    max-width: 105px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+.npc-notice,
+.npc-dialog footer small {
+  font-size: 10px;
+  line-height: 1.5;
+  color: #b9c4b0;
+}
+.npc-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+}
+.npc-sources a {
+  text-decoration: underline;
+  color: #d9cc9e;
+}
+.npc-dialog footer {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.npc-dialog footer small {
+  flex: 1;
+}
+.app-footer {
+  padding-bottom: 120px;
+}
+@media (max-width: 760px) {
+  .companion {
+    right: 10px;
+    bottom: 10px;
+  }
+  .npc-trigger {
+    width: 92px;
+  }
+  .npc-trigger img {
+    width: 80px;
+    height: 106px;
+  }
+  .npc-trigger span {
+    font-size: 9px;
+    padding: 4px 7px;
+  }
+  .npc-dialog {
+    bottom: 130px;
+    right: 0;
+    max-height: calc(100dvh - 155px);
+    padding: 18px;
+    width: min(400px, calc(100vw - 20px));
+  }
+  .race-picker {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .race-choice img {
+    height: 100px;
+  }
+  .submit-row {
+    margin-right: 82px;
+    flex-wrap: wrap;
+  }
+  .hero-dialog .auth-inner {
+    padding: 30px 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .npc-trigger img {
+    transition: none;
+  }
+}

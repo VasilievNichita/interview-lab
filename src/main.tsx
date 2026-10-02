@@ -14,7 +14,6 @@ import {
   Flame,
   GraduationCap,
   Layers3,
-  LogOut,
   Menu,
   RotateCcw,
   ShieldCheck,
@@ -29,28 +28,9 @@ import {
 import { chapters, lessons } from './data/curriculum';
 import type { Attempt, Chapter, Lesson, Progress, Question, User } from './data/types';
 import './style.css';
+import { api } from './api';
+import { ProfileDialog, Companion, readTransfer } from './realm';
 
-async function api<T>(path: string, data?: unknown): Promise<T> {
-  let response: Response;
-  try {
-    response = await fetch('/api/' + path, {
-      method: data === undefined ? 'GET' : 'POST',
-      headers: data === undefined ? {} : { 'Content-Type': 'application/json' },
-      body: data === undefined ? undefined : JSON.stringify(data),
-    });
-  } catch {
-    throw new Error('Нет связи с сервером. Проверь интернет и попробуй ещё раз.');
-  }
-  let result;
-  try {
-    result = await response.json();
-  } catch {
-    throw new Error('Не удалось связаться с сервером. Проверь подключение.');
-  }
-  if (!response.ok)
-    throw new Error((result as { error?: string }).error ?? 'Не удалось выполнить запрос.');
-  return result as T;
-}
 const number = (n: number) => String(n).padStart(2, '0');
 const plural = (n: number, forms: [string, string, string]) =>
   `${n} ${forms[n % 100 >= 11 && n % 100 <= 14 ? 2 : n % 10 === 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 ? 1 : 2]}`;
@@ -114,8 +94,19 @@ function App() {
   useEffect(() => {
     api<{ user: User | null }>('me')
       .then(async (d) => {
-        setUser(d.user);
-        if (d.user) await refresh();
+        let current = d.user;
+        if (!current) {
+          const saved = readTransfer();
+          if (saved) {
+            try {
+              current = (await api<{ user: User }>('profile/restore', { code: saved.code })).user;
+            } catch {
+              /* Keep the saved key available for manual retry. */
+            }
+          }
+        }
+        setUser(current);
+        if (current) await refresh();
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -150,20 +141,6 @@ function App() {
     try {
       await api('read', { lessonId: id });
       await refresh();
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
-  const logout = async () => {
-    setBusy(true);
-    try {
-      await api('logout', {});
-      setUser(null);
-      setProgress([]);
-      setAttempts([]);
-      navigate('home');
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -262,13 +239,19 @@ function App() {
           <small>
             {done} из {lessons.length} тем освоено
           </small>
-          <button className="profile" onClick={() => (user ? navigate('progress') : setAuth(true))}>
+          <button
+            className="profile"
+            onClick={() => {
+              setMobile(false);
+              setAuth(true);
+            }}
+          >
             <span className="avatar">
               {user ? user.name.slice(0, 1).toUpperCase() : <GraduationCap size={20} />}
             </span>
             <span>
               {user?.name ?? 'Гостевой режим'}
-              <small>{user ? 'Прогресс в облаке' : 'Войди, чтобы сохранять'}</small>
+              <small>{user ? 'Прогресс в облаке' : 'Выбери героя для сохранения'}</small>
             </span>
             <ChevronRight size={16} />
           </button>
@@ -304,21 +287,9 @@ function App() {
             <span className="level">
               <span /> Junior → Middle
             </span>
-            {user ? (
-              <button
-                className="icon-button"
-                disabled={busy}
-                onClick={logout}
-                title="Выйти"
-                aria-label="Выйти"
-              >
-                <LogOut size={18} />
-              </button>
-            ) : (
-              <button className="button small secondary" onClick={() => setAuth(true)}>
-                Войти <ArrowUpRight size={15} />
-              </button>
-            )}
+            <button className="button small secondary" onClick={() => setAuth(true)}>
+              {user ? user.name : 'Выбрать героя'}
+            </button>
           </div>
         </header>
         {route !== 'home' && (
@@ -455,12 +426,12 @@ function App() {
                         <div>
                           <b>Твой прогресс — на любом устройстве</b>
                           <p>
-                            Создай аккаунт, чтобы сохранять прочитанное, результаты и историю
+                            Выбери имя и расу, чтобы сохранять прочитанное, результаты и историю
                             попыток.
                           </p>
                         </div>
                         <button className="button secondary" onClick={() => setAuth(true)}>
-                          Создать аккаунт
+                          Выбрать героя
                         </button>
                       </div>
                     )}
@@ -612,9 +583,9 @@ function App() {
                     <div className="empty-state">
                       <GraduationCap size={48} />
                       <h2>Сохрани свою точку старта</h2>
-                      <p>Войди в аккаунт — и результаты будут доступны с телефона и компьютера.</p>
+                      <p>Выбери героя — и результаты будут доступны с телефона и компьютера.</p>
                       <button className="button primary" onClick={() => setAuth(true)}>
-                        Войти или зарегистрироваться
+                        Выбрать героя или зарегистрироваться
                       </button>
                     </div>
                   ) : (
@@ -722,7 +693,13 @@ function App() {
           </footer>
         </main>
       </div>
-      {auth && <AuthModal onClose={() => setAuth(false)} onAuth={onAuth} />}
+      {auth && <ProfileDialog user={user} onClose={() => setAuth(false)} onAuth={onAuth} />}
+      <Companion
+        key={user?.id ?? 'guest'}
+        user={user}
+        lessonId={currentLesson?.id}
+        onSetup={() => setAuth(true)}
+      />
     </div>
   );
 }
@@ -773,7 +750,7 @@ function ChapterCard({
       <p>{c.subtitle}</p>
       <div className="chapter-bottom">
         <span>
-          {c.lessons.length * 8} мин <i /> Теория + тест
+          {c.lessons.reduce((sum, l) => sum + l.minutes, 0)} мин <i /> Теория + тест
         </span>
         <div className="segmented">
           {c.lessons.map((l) => (
@@ -902,7 +879,7 @@ function LessonView({
           </div>
           {!user && (
             <p className="save-note">
-              Читать и решать можно без аккаунта. Для сохранения прогресса понадобится вход.
+              Читать и решать можно без профиля. Для сохранения прогресса понадобится профиль героя.
             </p>
           )}
           {next && (
@@ -1035,7 +1012,7 @@ function Quiz({
                 <p>
                   Верно {result.correct} из {result.total}.{' '}
                   {result.saved
-                    ? 'Результат сохранён в аккаунте.'
+                    ? 'Результат сохранён в твоём профиле.'
                     : 'Это гостевая попытка, результат не сохранён.'}
                 </p>
                 <button
@@ -1051,7 +1028,7 @@ function Quiz({
                 </button>
                 {!result.saved && (
                   <button className="text-button" onClick={onAuth}>
-                    Войти для следующих попыток
+                    Сохранить путь героя
                   </button>
                 )}
               </div>
@@ -1060,7 +1037,8 @@ function Quiz({
           {!user && !result && (
             <p className="guest-quiz">
               <ShieldCheck size={17} />
-              Гостевая попытка. <button onClick={onAuth}>Войди</button>, чтобы сохранить результат.
+              Гостевая попытка. <button onClick={onAuth}>Выбери героя</button>, чтобы сохранить
+              результат.
             </p>
           )}
           <form onSubmit={submit}>
@@ -1205,191 +1183,4 @@ function InterviewCards() {
   );
 }
 
-function AuthModal({
-  onClose,
-  onAuth,
-}: {
-  onClose: () => void;
-  onAuth: (u: User) => Promise<void>;
-}) {
-  const dialog = useRef<HTMLDialogElement>(null);
-  const [mode, setMode] = useState<'login' | 'register' | 'recover'>('register'),
-    [error, setError] = useState(''),
-    [busy, setBusy] = useState(false),
-    [recovery, setRecovery] = useState('');
-  useEffect(() => {
-    const d = dialog.current;
-    d?.showModal();
-    return () => d?.close();
-  }, []);
-  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setBusy(true);
-    setError('');
-    const f = new FormData(e.currentTarget);
-    try {
-      const data = await api<{ user: User; recoveryCode?: string }>(mode, Object.fromEntries(f));
-      await onAuth(data.user);
-      if (data.recoveryCode) setRecovery(data.recoveryCode);
-      else onClose();
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <dialog
-      ref={dialog}
-      className="auth-dialog"
-      onCancel={(e) => {
-        if (recovery) {
-          e.preventDefault();
-          return;
-        }
-        onClose();
-      }}
-    >
-      <div className="auth-inner">
-        <button className="modal-close icon-button" aria-label="Закрыть" onClick={onClose}>
-          <X size={21} />
-        </button>
-        <span className="brand-icon">
-          <Code2 size={26} />
-        </span>
-        {recovery ? (
-          <>
-            <h2>Сохрани код восстановления</h2>
-            <p>
-              Он понадобится, если забудешь пароль. Отправки писем нет; код показывается только
-              сейчас. Сохрани его в менеджере паролей.
-            </p>
-            <code className="recovery-code">{recovery}</code>
-            <p className="save-note">
-              При восстановлении старый код заменяется новым, все прежние сеансы завершаются.
-            </p>
-            <button className="button primary full" onClick={onClose}>
-              Я сохранил код
-            </button>
-          </>
-        ) : (
-          <>
-            <h2>
-              {mode === 'register'
-                ? 'Твой путь начинается здесь.'
-                : mode === 'login'
-                  ? 'С возвращением.'
-                  : 'Вернём доступ.'}
-            </h2>
-            <p>
-              {mode === 'register'
-                ? 'Один аккаунт. Все уроки и результаты — с тобой на любом устройстве.'
-                : mode === 'login'
-                  ? 'Войди, чтобы продолжить с того места, где остановился.'
-                  : 'Введи email, сохранённый код восстановления и новый пароль.'}
-            </p>
-            <div className="auth-tabs">
-              <button
-                className={mode === 'register' ? 'active' : ''}
-                onClick={() => {
-                  setMode('register');
-                  setError('');
-                }}
-              >
-                Регистрация
-              </button>
-              <button
-                className={mode === 'login' ? 'active' : ''}
-                onClick={() => {
-                  setMode('login');
-                  setError('');
-                }}
-              >
-                Вход
-              </button>
-            </div>
-            <form onSubmit={submit}>
-              {mode === 'register' && (
-                <label>
-                  Как тебя зовут
-                  <input
-                    name="name"
-                    autoComplete="given-name"
-                    required
-                    minLength={2}
-                    maxLength={60}
-                    placeholder="Никита"
-                  />
-                </label>
-              )}
-              <label>
-                Email
-                <input
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  maxLength={254}
-                  placeholder="you@example.com"
-                />
-              </label>
-              {mode === 'recover' && (
-                <label>
-                  Код восстановления
-                  <input
-                    name="recoveryCode"
-                    autoComplete="off"
-                    required
-                    minLength={48}
-                    maxLength={48}
-                  />
-                </label>
-              )}
-              <label>
-                {mode === 'recover' ? 'Новый пароль' : 'Пароль'}
-                <input
-                  name="password"
-                  type="password"
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  required
-                  minLength={12}
-                  maxLength={128}
-                  placeholder="Не меньше 12 символов"
-                />
-              </label>
-              {error && (
-                <div className="form-error" role="alert">
-                  {error}
-                </div>
-              )}
-              <button className="button primary full" disabled={busy}>
-                {busy
-                  ? 'Подождём ответ сервера…'
-                  : mode === 'register'
-                    ? 'Создать аккаунт'
-                    : mode === 'login'
-                      ? 'Войти'
-                      : 'Восстановить доступ'}
-              </button>
-            </form>
-            <button
-              className="text-button"
-              onClick={() => {
-                setMode('recover');
-                setError('');
-              }}
-            >
-              Забыл пароль?
-            </button>
-            <p className="privacy-note">
-              <ShieldCheck size={14} />
-              Email используется для входа, без рассылок. Подтверждение почты не выполняется.
-              Сохраняются имя, защищённые данные входа и результаты обучения.
-            </p>
-          </>
-        )}
-      </div>
-    </dialog>
-  );
-}
 createRoot(document.getElementById('root')!).render(<App />);

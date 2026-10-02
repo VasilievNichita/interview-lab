@@ -1,4 +1,5 @@
 import { lessons, scopeQuestions } from '../src/data/curriculum';
+import { answerQuestion } from './mentor';
 import { grade } from './grading';
 import {
   cookie,
@@ -12,6 +13,7 @@ import {
 interface Env {
   DB: D1Database;
   ASSETS: Fetcher;
+  AI?: { run: (model: string, input: Record<string, unknown>) => Promise<{ response?: string }> };
 }
 interface Account {
   id: string;
@@ -20,6 +22,7 @@ interface Account {
   password_hash: string;
   salt: string;
   recovery_hash: string;
+  race?: string;
 }
 class HttpError extends Error {
   constructor(
@@ -39,7 +42,12 @@ const json = (data: unknown, status = 200, headers: Record<string, string> = {})
     },
   });
 const now = () => Math.floor(Date.now() / 1000);
-const publicUser = (u: Account) => ({ id: u.id, name: u.name, email: u.email });
+const publicUser = (u: Account) => ({
+  id: u.id,
+  name: u.name,
+  email: u.email,
+  race: u.race ?? 'human',
+});
 async function body(request: Request): Promise<Record<string, unknown>> {
   if (!request.headers.get('content-type')?.startsWith('application/json'))
     throw new HttpError(415, 'Ожидается JSON.');
@@ -117,6 +125,70 @@ async function route(request: Request, env: Env) {
   if (path === '/api/me' && method === 'GET') {
     const u = await session(request, env);
     return json({ user: u ? publicUser(u) : null });
+  }
+
+  if (path === '/api/profile/restore' && method === 'POST') {
+    const b = await body(request);
+    await limit(
+      env,
+      'restore-ip:' + (await digest(request.headers.get('CF-Connecting-IP') ?? 'local')),
+      15,
+      900,
+    );
+    const code = typeof b.code === 'string' ? b.code.trim() : '';
+    if (!/^(?:[a-f0-9]{48}|[a-f0-9]{64})$/.test(code))
+      throw new HttpError(400, 'Проверь секретный код.');
+    const found = await env.DB.prepare('SELECT * FROM users WHERE recovery_hash=?')
+      .bind(await digest(code))
+      .first<Account>();
+    if (!found) throw new HttpError(401, 'Код не найден или уже заменён.');
+    return signIn(env, found, request);
+  }
+  if (path === '/api/profile' && method === 'POST') {
+    const b = await body(request);
+    const name = typeof b.name === 'string' ? b.name.trim() : '';
+    const race = typeof b.race === 'string' ? b.race : '';
+    if (name.length < 2 || name.length > 60 || !['human', 'elf', 'orc', 'dwarf'].includes(race))
+      throw new HttpError(400, 'Укажи имя от 2 до 60 символов и выбери расу.');
+    const current = await session(request, env);
+    if (current) {
+      await env.DB.prepare('UPDATE users SET name=?,race=? WHERE id=?')
+        .bind(name, race, current.id)
+        .run();
+      return json({ user: publicUser({ ...current, name, race }) });
+    }
+    await limit(
+      env,
+      'profile-ip:' + (await digest(request.headers.get('CF-Connecting-IP') ?? 'local')),
+      10,
+      3600,
+    );
+    const code = randomToken(),
+      id = crypto.randomUUID();
+    const profile: Account = {
+      id,
+      name,
+      race,
+      email: id + '@profile.invalid',
+      password_hash: randomToken(),
+      salt: randomToken(16),
+      recovery_hash: await digest(code),
+    };
+    await env.DB.prepare(
+      'INSERT INTO users(id,email,name,password_hash,salt,recovery_hash,created_at,race) VALUES(?,?,?,?,?,?,?,?)',
+    )
+      .bind(
+        id,
+        profile.email,
+        name,
+        profile.password_hash,
+        profile.salt,
+        profile.recovery_hash,
+        now(),
+        race,
+      )
+      .run();
+    return signIn(env, profile, request, { transferCode: code });
   }
   if (['/api/register', '/api/login', '/api/recover'].includes(path) && method === 'POST') {
     const b = await body(request);
@@ -199,6 +271,37 @@ async function route(request: Request, env: Env) {
     return signIn(env, existing, request);
   }
   const u = await session(request, env);
+
+  if (path === '/api/profile/key' && method === 'POST') {
+    if (!u) throw new HttpError(401, 'Сначала выбери героя.');
+    await limit(env, 'profile-key:' + u.id, 5, 3600);
+    const code = randomToken();
+    await env.DB.prepare('UPDATE users SET recovery_hash=? WHERE id=?')
+      .bind(await digest(code), u.id)
+      .run();
+    return json({ transferCode: code });
+  }
+  if (path === '/api/mentor' && method === 'POST') {
+    if (!u) throw new HttpError(401, 'Сначала выбери имя и расу.');
+    const b = await body(request);
+    const question = typeof b.question === 'string' ? b.question.trim() : '';
+    if (question.length < 3 || question.length > 800)
+      throw new HttpError(400, 'Вопрос должен содержать от 3 до 800 символов.');
+    await limit(env, 'mentor:' + u.id, 20, 3600);
+    let allowAI = !!env.AI;
+    try {
+      await limit(env, 'mentor-day:' + Math.floor(now() / 86400), 60, 86400);
+    } catch {
+      allowAI = false;
+    }
+    return json(
+      await answerQuestion(
+        question,
+        typeof b.lessonId === 'string' ? b.lessonId : '',
+        allowAI ? env.AI : undefined,
+      ),
+    );
+  }
   if (path === '/api/logout' && method === 'POST') {
     const token = request.headers
       .get('Cookie')

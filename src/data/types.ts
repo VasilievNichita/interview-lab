@@ -43,6 +43,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  race?: 'human' | 'elf' | 'orc' | 'dwarf';
 }
 export type LessonInput = [
   string,

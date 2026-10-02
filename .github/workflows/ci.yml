@@ -20,15 +20,23 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - run: pnpm build
-      - run: pnpm db:local
+      - run: pnpm exec wrangler d1 migrations apply duskwarden-ci --local --env ci
       - name: Test local API
         shell: bash
         run: |
-          pnpm exec wrangler dev --ip 127.0.0.1 --port 8787 > /tmp/interview-lab-worker.log 2>&1 &
+          pnpm exec wrangler dev --env ci --ip 127.0.0.1 --port 8787 > /tmp/interview-lab-worker.log 2>&1 &
           WORKER_PID=$!
           trap 'kill "$WORKER_PID" || true' EXIT
           for attempt in {1..30}; do
             if curl -fsS http://127.0.0.1:8787/api/health; then break; fi
+            if ! kill -0 "$WORKER_PID" 2>/dev/null; then
+              cat /tmp/interview-lab-worker.log
+              exit 1
+            fi
             sleep 1
           done
+          if ! curl -fsS http://127.0.0.1:8787/api/health; then
+            cat /tmp/interview-lab-worker.log
+            exit 1
+          fi
           TEST_BASE_URL=http://127.0.0.1:8787 pnpm test

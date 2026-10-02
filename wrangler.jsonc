@@ -18,4 +18,18 @@
       "migrations_dir": "migrations",
     },
   ],
+  // CI intentionally has no AI binding or production database identity.
+  "env": {
+    "ci": {
+      "name": "duskwarden-ci",
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "duskwarden-ci",
+          "database_id": "00000000-0000-0000-0000-000000000001",
+          "migrations_dir": "migrations",
+        },
+      ],
+    },
+  },
 }

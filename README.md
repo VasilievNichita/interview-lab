@@ -44,6 +44,15 @@ pnpm preview
 
 Open `http://localhost:8787`. Local D1 data is stored in ignored `.wrangler/` files and is separate from production. AI inference uses Cloudflare even during local development and requires an authorized account. Remove the optional `ai` binding for fully offline backend development; the mentor then returns labeled course material.
 
+For development without Cloudflare credentials, use the isolated CI environment instead of removing bindings:
+
+```sh
+pnpm exec wrangler d1 migrations apply duskwarden-ci --local --env ci
+pnpm exec wrangler dev --env ci
+```
+
+This environment has its own local database identity and no remote AI binding. It exercises the explicit course fallback. GitHub CI uses the same environment; production inference is verified separately.
+
 For hot reload, keep Wrangler running and run `pnpm dev` in another terminal. Vite proxies `/api` to Wrangler on port 8787. For production-equivalent browser QA use the Wrangler URL after `pnpm build`.
 
 ## Tests
